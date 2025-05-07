@@ -26,11 +26,14 @@
 /* USER CODE BEGIN Includes */
 #include "st7789.h"
 #include "fonts.h"
+
+#include "ebtn.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
+uint32_t fps;
+uint8_t text[10];
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -105,12 +108,17 @@ int main(void)
 		HAL_GPIO_WritePin(GPIOC,GPIO_PIN_0,GPIO_PIN_SET);
 		HAL_GPIO_WritePin(GPIOC,GPIO_PIN_1,GPIO_PIN_SET);
 		HAL_GPIO_WritePin(GPIOC,GPIO_PIN_2,GPIO_PIN_SET);
-		HAL_Delay(500);
+		//HAL_Delay(500);
 		HAL_GPIO_WritePin(GPIOC,GPIO_PIN_0,GPIO_PIN_RESET);
 		HAL_GPIO_WritePin(GPIOC,GPIO_PIN_1,GPIO_PIN_RESET);
 		HAL_GPIO_WritePin(GPIOC,GPIO_PIN_2,GPIO_PIN_RESET);
-		HAL_Delay(500);
-		ST7789_Test();
+		//HAL_Delay(500);
+		//ST7789_Test();
+    fps=HAL_GetTick();
+    ST7789_Fill_Color(BLACK);
+    fps=1000/(HAL_GetTick()-fps);
+    sprintf(text,"FPS: %d",fps);
+	  ST7789_WriteString(10, 20, text, Font_16x26, RED, BLACK);
   }
   /* USER CODE END 3 */
 }

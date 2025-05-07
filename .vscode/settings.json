@@ -1,0 +1,6 @@
+{
+    "cmake.sourceDirectory": "E:/KAIFABAN/GD32/GD32_stmf429zgt6_4.30/Drivers/CMSIS/NN",
+    "files.associations": {
+        "ebtn.h": "c"
+    }
+}
