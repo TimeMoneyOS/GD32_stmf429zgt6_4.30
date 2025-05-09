@@ -38,7 +38,85 @@ uint8_t text[10];
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+const ebtn_btn_param_t key_param_normal = EBTN_PARAMS_INIT(
+20,
+20,
+50,
+500,
+300,
+500,
+5
+);
 
+typedef enum
+{
+    USER_BUTTON_0 = 0,
+    USER_BUTTON_1,
+    USER_BUTTON_MAX,
+
+    USER_BUTTON_COMBO_0 = 0x100,
+    USER_BUTTON_COMBO_1,
+    USER_BUTTON_COMBO_MAX,
+} user_button_t;
+
+static ebtn_btn_t btns[] = {
+  EBTN_BUTTON_INIT(USER_BUTTON_0, &key_param_normal),
+  EBTN_BUTTON_INIT(USER_BUTTON_1, &key_param_normal),
+};
+
+static ebtn_btn_combo_t btns_combo[] = {
+  EBTN_BUTTON_COMBO_INIT(USER_BUTTON_COMBO_0, &key_param_normal),
+  EBTN_BUTTON_COMBO_INIT(USER_BUTTON_COMBO_1, &key_param_normal),
+};
+
+
+void prv_btn_event(struct ebtn_btn *btn, ebtn_evt_t evt)
+{
+  if(evt == EBTN_EVT_ONCLICK)
+   {
+    uint16_t click_cnt = ebtn_click_get_count(btn);
+
+    switch (btn->key_id)
+    {
+    case USER_BUTTON_0:
+    if(click_cnt==1)
+    {
+      HAL_GPIO_TogglePin(GPIOC,GPIO_PIN_0);
+    }
+    else if(click_cnt==2)
+    {
+      HAL_GPIO_TogglePin(GPIOC,GPIO_PIN_1);
+    }
+      break;
+      case USER_BUTTON_1:
+      if(click_cnt==1)
+      {
+        HAL_GPIO_TogglePin(GPIOC,GPIO_PIN_2);
+      }
+      else if(click_cnt==2)
+      {
+        HAL_GPIO_TogglePin(GPIOC,GPIO_PIN_2);
+      }
+        break;
+    default:
+      break;
+    }
+   }
+   
+}
+
+uint8_t prv_btn_get_state(struct ebtn_btn *btn)
+{
+  switch (btn->key_id)
+  {
+  case USER_BUTTON_0:
+    return !HAL_GPIO_ReadPin(GPIOC,GPIO_PIN_13);
+  case USER_BUTTON_1:
+    return !HAL_GPIO_ReadPin(GPIOB,GPIO_PIN_2);
+  default:
+    return 0;
+  }
+}
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -96,6 +174,8 @@ int main(void)
   MX_SPI1_Init();
   /* USER CODE BEGIN 2 */
   ST7789_Init();
+  ebtn_init(btns, EBTN_ARRAY_SIZE(btns), btns_combo, EBTN_ARRAY_SIZE(btns_combo),
+              prv_btn_get_state, prv_btn_event);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -105,20 +185,22 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-		HAL_GPIO_WritePin(GPIOC,GPIO_PIN_0,GPIO_PIN_SET);
-		HAL_GPIO_WritePin(GPIOC,GPIO_PIN_1,GPIO_PIN_SET);
-		HAL_GPIO_WritePin(GPIOC,GPIO_PIN_2,GPIO_PIN_SET);
+//		HAL_GPIO_WritePin(GPIOC,GPIO_PIN_0,GPIO_PIN_SET);
+//		HAL_GPIO_WritePin(GPIOC,GPIO_PIN_1,GPIO_PIN_SET);
+//		HAL_GPIO_WritePin(GPIOC,GPIO_PIN_2,GPIO_PIN_SET);
 		//HAL_Delay(500);
-		HAL_GPIO_WritePin(GPIOC,GPIO_PIN_0,GPIO_PIN_RESET);
-		HAL_GPIO_WritePin(GPIOC,GPIO_PIN_1,GPIO_PIN_RESET);
-		HAL_GPIO_WritePin(GPIOC,GPIO_PIN_2,GPIO_PIN_RESET);
+//		HAL_GPIO_WritePin(GPIOC,GPIO_PIN_0,GPIO_PIN_RESET);
+//		HAL_GPIO_WritePin(GPIOC,GPIO_PIN_1,GPIO_PIN_RESET);
+//		HAL_GPIO_WritePin(GPIOC,GPIO_PIN_2,GPIO_PIN_RESET);
 		//HAL_Delay(500);
 		//ST7789_Test();
+    HAL_Delay(50);
     fps=HAL_GetTick();
     ST7789_Fill_Color(BLACK);
     fps=1000/(HAL_GetTick()-fps);
     sprintf(text,"FPS: %d",fps);
 	  ST7789_WriteString(10, 20, text, Font_16x26, RED, BLACK);
+    ebtn_process(HAL_GetTick());
   }
   /* USER CODE END 3 */
 }

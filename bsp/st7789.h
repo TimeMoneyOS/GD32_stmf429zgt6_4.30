@@ -128,7 +128,7 @@ extern SPI_HandleTypeDef ST7789_SPI_PORT;
         #define ST7789_WIDTH 320
         #define ST7789_HEIGHT 172
         #define X_SHIFT 0
-        #define Y_SHIFT 34
+        #define Y_SHIFT 36
     #endif
 
 #endif
